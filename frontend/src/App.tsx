@@ -1,35 +1,143 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect, useCallback } from 'react';
+import Header from './components/Header';
+import TaskForm from './components/TaskForm';
+import TaskCard from './components/TaskCard';
+import LoadingSpinner from './components/LoadingSpinner';
+import EmptyState from './components/EmptyState';
+import { taskService } from './services/api';
+import type { Task } from './types/Task';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await taskService.getTasks();
+      setTasks(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch tasks. Please try again.');
+      console.error('Error fetching tasks:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const showSuccessMessage = (message: string) => {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(null), 3000);
+  };
+
+  const handleCreateTask = async (title: string, description: string) => {
+    try {
+      setIsCreating(true);
+      await taskService.createTask({ title, description });
+      await fetchTasks();
+      showSuccessMessage('✨ Task created successfully!');
+    } catch (err) {
+      setError('Failed to create task. Please try again.');
+      console.error('Error creating task:', err);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleCompleteTask = async (taskId: number) => {
+    try {
+      await taskService.completeTask(taskId);
+      await fetchTasks();
+      showSuccessMessage('🎉 Task completed! Great job!');
+    } catch (err) {
+      setError('Failed to complete task. Please try again.');
+      console.error('Error completing task:', err);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gradient-to-br from-primary via-purple-500 to-secondary overflow-hidden relative">
+      {/* Animated Background Blobs */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-purple-300/30 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300/30 rounded-full blur-3xl animate-float" 
+           style={{ animationDelay: '5s' }} />
+      <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl animate-float" 
+           style={{ animationDelay: '10s' }} />
+
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
+        <Header taskCount={tasks.length} />
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="glass-strong rounded-2xl p-4 mb-6 shadow-xl animate-slide-down">
+            <div className="flex items-center justify-center gap-3 text-white font-semibold text-lg">
+              <span className="text-2xl">✅</span>
+              {successMessage}
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-500/90 backdrop-blur-md border border-red-300/50 rounded-2xl p-4 mb-6 shadow-xl animate-slide-down">
+            <div className="flex items-center justify-center gap-3 text-white font-semibold text-lg">
+              <span className="text-2xl">⚠️</span>
+              {error}
+            </div>
+          </div>
+        )}
+
+        {/* Task Form */}
+        <div className="mb-8">
+          <TaskForm onSubmit={handleCreateTask} isLoading={isCreating} />
+        </div>
+
+        {/* Tasks Section */}
+        <div className="animate-slide-up">
+          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3 drop-shadow-lg">
+            <span className="text-4xl">📋</span>
+            Recent Tasks
+            <span className="text-xl font-normal text-white/80">(Latest 5)</span>
+          </h2>
+
+          {loading ? (
+            <LoadingSpinner />
+          ) : tasks.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="space-y-4">
+              {tasks.map((task, index) => (
+                <div 
+                  key={task.id} 
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="animate-slide-up"
+                >
+                  <TaskCard task={task} onComplete={handleCompleteTask} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-16 text-center">
+          <div className="glass rounded-2xl p-6 inline-block shadow-xl">
+            <p className="text-white/80 text-sm">
+              Made with <span className="text-red-400 animate-pulse">❤️</span> for productivity
+            </p>
+          </div>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
