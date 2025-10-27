@@ -10,4 +10,6 @@ export interface Task {
 export interface CreateTaskDto {
   title: string;
   description?: string;
+  // Optional scheduled ISO datetime string, e.g. '2025-01-02T14:30:00Z' or local ISO
+  scheduledAt?: string;
 }

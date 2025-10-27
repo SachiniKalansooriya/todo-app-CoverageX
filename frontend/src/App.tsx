@@ -43,10 +43,10 @@ function App() {
     setTimeout(() => setSuccessMessage(null), 3000);
   };
 
-  const handleCreateTask = async (title: string, description: string) => {
+  const handleCreateTask = async (title: string, description: string, scheduledAt?: string) => {
     try {
       setIsCreating(true);
-      await taskService.createTask({ title, description });
+      await taskService.createTask({ title, description, scheduledAt });
       await fetchTasks();
       showSuccessMessage('Task created successfully!');
     } catch (err) {
