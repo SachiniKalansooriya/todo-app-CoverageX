@@ -79,7 +79,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
             </div>
             {task.scheduledAt && (
               <div className="flex items-center gap-2">
-                <span className="text-lg">⏰</span>
                 <span>Scheduled: {formatDate(task.scheduledAt)}</span>
               </div>
             )}

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import type { Task, CreateTaskDto } from '../types/Task';
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:4000/api';
+// Use a test-friendly lookup for environment values so Jest (which doesn't support import.meta)
+// can override via (global as any).importMetaEnv in tests. Fallback to process.env then default.
+const API_BASE_URL = (global as any).importMetaEnv?.VITE_API_URL || (process.env.VITE_API_URL as string) || 'http://localhost:4000/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

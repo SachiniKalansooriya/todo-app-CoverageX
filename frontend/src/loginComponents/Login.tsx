@@ -83,7 +83,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     if (!googleButtonRef.current) return;
 
     try {
-      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+  // read client id from a test-friendly helper that prefers a global shim
+  // (set in tests by setting (global as any).importMetaEnv)
+  const clientId = (global as any).importMetaEnv?.VITE_GOOGLE_CLIENT_ID || (process.env.VITE_GOOGLE_CLIENT_ID as string) || '';
       // Debug info to help diagnose origin
       console.debug('[GSI] init attempt', { clientId, origin: window.location.origin });
       if (!clientId) {
