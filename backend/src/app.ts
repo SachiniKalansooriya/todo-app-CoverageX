@@ -11,7 +11,8 @@ export async function createApp() {
   }
 
   const app = express();
-  app.use(cors());
+  const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+  app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
   app.use(express.json());
 
   // Routes

@@ -76,6 +76,21 @@ router.post('/google', async (req, res) => {
       // Create application JWT signed with DB user id (so we can use it as owner id)
       const appToken = jwt.sign({ sub: dbUser.id, email: dbUser.email, name: dbUser.name }, JWT_SECRET, { expiresIn: '7d' });
 
+      // Set token as HttpOnly cookie for safer storage in browsers. We also return the token
+      // in the response body for compatibility with clients that store token in JS (localStorage).
+      const cookieOptions: any = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      };
+      try {
+        res.cookie('token', appToken, cookieOptions);
+      } catch (cookieErr) {
+        // If setting cookie is not available (e.g., in some test env), ignore
+        console.debug('Unable to set cookie on response:', cookieErr);
+      }
+
       // Return normalized user object (use DB id)
       const returnedUser = {
         id: dbUser.id,
@@ -89,6 +104,11 @@ router.post('/google', async (req, res) => {
       // Even if DB upsert fails, return token so frontend can still use app token.
       // In this fallback case we only have the google sub as id
       const fallbackToken = jwt.sign({ sub: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+      try {
+        res.cookie('token', fallbackToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      } catch (cookieErr) {
+        // ignore
+      }
       res.json({ user, token: fallbackToken });
     }
   } catch (err) {
@@ -99,14 +119,28 @@ router.post('/google', async (req, res) => {
 
 // Get current user from app JWT
 router.get('/me', (req, res) => {
+  // Support Authorization header or cookie named 'token'
+  let token: string | undefined;
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Missing Authorization header' });
+  if (authHeader) {
+    const parts = authHeader.split(' ');
+    if (parts.length === 2 && parts[0] === 'Bearer') token = parts[1];
+  }
+  if (!token && req.headers.cookie) {
+    const cookies = req.headers.cookie.split(';').map((c) => c.trim());
+    for (const c of cookies) {
+      const [name, ...rest] = c.split('=');
+      if (name === 'token') {
+        token = decodeURIComponent(rest.join('='));
+        break;
+      }
+    }
+  }
 
-  const parts = authHeader.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') return res.status(401).json({ error: 'Invalid Authorization format' });
+  if (!token) return res.status(401).json({ error: 'Missing Authorization token' });
 
   try {
-    const decoded = jwt.verify(parts[1], JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
     const user = {
       id: decoded.sub,
       email: decoded.email,
@@ -120,7 +154,13 @@ router.get('/me', (req, res) => {
 });
 
 // Logout (client should remove token; server-side invalidation would require token store)
+// Logout: clear cookie on client
 router.post('/logout', (req, res) => {
+  try {
+    res.clearCookie('token');
+  } catch (err) {
+    // ignore
+  }
   res.json({ message: 'Logged out successfully' });
 });
 

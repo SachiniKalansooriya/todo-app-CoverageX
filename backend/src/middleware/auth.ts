@@ -8,17 +8,32 @@ export interface AuthRequest extends Request {
 }
 
 export function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
+  // Support both Authorization header (Bearer) and HttpOnly cookie named 'token'
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Missing Authorization header' });
+  let token: string | undefined;
+
+  if (authHeader) {
+    const parts = authHeader.split(' ');
+    if (parts.length === 2 && parts[0] === 'Bearer') {
+      token = parts[1];
+    }
   }
 
-  const parts = authHeader.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') {
-    return res.status(401).json({ error: 'Invalid Authorization header format' });
+  // If not in header, try cookies (simple parse to avoid extra dependency)
+  if (!token && req.headers.cookie) {
+    const cookies = req.headers.cookie.split(';').map((c) => c.trim());
+    for (const c of cookies) {
+      const [name, ...rest] = c.split('=');
+      if (name === 'token') {
+        token = decodeURIComponent(rest.join('='));
+        break;
+      }
+    }
   }
 
-  const token = parts[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Missing Authorization token' });
+  }
   try {
     const payload = jwt.verify(token, JWT_SECRET) as any;
     // Expect payload.sub to be the DB user id (uuid)
