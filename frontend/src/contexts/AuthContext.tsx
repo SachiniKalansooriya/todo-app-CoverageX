@@ -15,11 +15,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Do not auto-authenticate from a stored token on initial load.
-    // This ensures the first screen a fresh browser session sees is the login page
-    // and avoids accidental auto-sign-in UX (One-Tap, stale tokens, etc.).
-    // The app still supports programmatic login via `login(user, token)`.
-    setIsLoading(false);
+    // Try to restore user from localStorage token on refresh
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // Use the same axios instance as the rest of the app (handles cookies, baseURL)
+      import('../services/api').then(({ authService }) => {
+        authService.getCurrentUser()
+          .then((user) => {
+            if (user && user.id) {
+              setUser(user);
+            } else {
+              setUser(null);
+              localStorage.removeItem('authToken');
+            }
+            setIsLoading(false);
+          })
+          .catch(() => {
+            setUser(null);
+            localStorage.removeItem('authToken');
+            setIsLoading(false);
+          });
+      });
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const login = (userData: User, token: string) => {

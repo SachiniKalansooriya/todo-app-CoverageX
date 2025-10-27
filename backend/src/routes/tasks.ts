@@ -12,15 +12,17 @@ router.use(requireAuth as any);
 // Get all tasks for the authenticated user
 router.get('/', async (req: AuthRequest, res) => {
   try {
-    const taskRepository = AppDataSource.getRepository(Task);
-    // Return only the latest 5 tasks as per frontend logic
     const userId = req.userId!;
-    const tasks = await taskRepository.find({
-      where: { userId },
-      order: { createdAt: 'DESC' },
-      take: 5,
-      relations: ['user']
-    });
+    // Return only tasks that have a scheduled date/time, ordered by scheduledAt (newest first).
+    // Tasks without a scheduledAt value are excluded by design per requirement.
+    const tasks = await AppDataSource.getRepository(Task)
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.user', 'user')
+      .where('task.userId = :userId', { userId })
+      .andWhere('task.scheduledAt IS NOT NULL')
+      .orderBy('task.scheduledAt', 'ASC')
+      .limit(5)
+      .getMany();
 
     res.json(tasks.map(task => ({
       id: task.id,

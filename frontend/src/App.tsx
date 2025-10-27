@@ -39,26 +39,8 @@ function App() {
     }
   }, [fetchTasks, isAuthenticated]);
 
-  // Keep the URL in sync with auth state so navigation is structured.
-  useEffect(() => {
-    if (isLoading) return;
-
-    try {
-      if (!isAuthenticated) {
-        // If user is not authenticated, ensure URL is root (login page)
-        if (window.location.pathname !== '/') {
-          window.history.replaceState({}, '', '/');
-        }
-      } else {
-        // Authenticated users should see the dashboard at '/dashboard'
-        if (window.location.pathname !== '/dashboard') {
-          window.history.replaceState({}, '', '/dashboard');
-        }
-      }
-    } catch (e) {
-      console.debug('History update skipped:', e);
-    }
-  }, [isAuthenticated, isLoading]);
+  // Only redirect to login page on explicit logout, not on refresh.
+  // Remove auto-redirect logic from useEffect.
 
   const showSuccessMessage = (message: string) => {
     setSuccessMessage(message);
