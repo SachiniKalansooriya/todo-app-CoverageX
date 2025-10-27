@@ -7,6 +7,60 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
+## Google Sign-In Setup
+
+This application includes Google OAuth 2.0 sign-in functionality.
+
+### Prerequisites
+
+1. Create a Google Cloud Console project at https://console.cloud.google.com/
+2. Enable the Google+ API
+3. Create OAuth 2.0 credentials
+4. Add your domain to authorized origins
+
+### Configuration
+
+1. Copy `.env.example` to `.env`
+2. Add your Google Client ID:
+   ```
+   VITE_GOOGLE_CLIENT_ID=your-actual-google-client-id-here
+   ```
+3. Make sure your backend API has the `/auth/google` endpoint implemented
+
+### Step-by-Step Google Cloud Setup:
+
+1. **Go to Google Cloud Console**: https://console.cloud.google.com/
+2. **Create or select a project**
+3. **Enable APIs**:
+   - Go to "APIs & Services" > "Library"
+   - Search for "Google+ API" and enable it
+4. **Create OAuth Credentials**:
+   - Go to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "OAuth 2.0 Client IDs"
+   - Choose "Web application"
+   - Add authorized origins: `http://localhost:5173` (for development)
+   - Add authorized redirect URIs: `http://localhost:5173` (for development)
+5. **Copy the Client ID** and paste it in your `.env` file
+
+### Troubleshooting
+
+**"The given client ID is not found"**
+- Make sure your Google Client ID is correct
+- Verify the client ID is for a "Web application" type
+- Check that your domain is added to authorized origins
+
+**"FedCM was disabled"**
+- Enable third-party sign-in in your browser settings
+- Chrome: Go to `chrome://settings/privacy` and enable "Third-party sign-in"
+
+**"Only one navigator.credentials.get request may be outstanding"**
+- This happens when multiple sign-in attempts occur simultaneously
+- Refresh the page and try again
+
+**403 Error**
+- Check your authorized origins in Google Cloud Console
+- Make sure you're using the correct Client ID
+
 ## React Compiler
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).

@@ -1,13 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import Header from './components/Header';
-import TaskForm from './components/TaskForm';
-import TaskCard from './components/TaskCard';
-import LoadingSpinner from './components/LoadingSpinner';
-import EmptyState from './components/EmptyState';
+import { useState, useEffect, useCallback } from 'react';
+import Header from './taskComponents/Header';
+import TaskForm from './taskComponents/TaskForm';
+import TaskCard from './taskComponents/TaskCard';
+import LoadingSpinner from './taskComponents/LoadingSpinner';
+import EmptyState from './taskComponents/EmptyState';
+import Login from './loginComponents/Login';
 import { taskService } from './services/api';
+import { useAuth } from './hooks/useAuth';
 import type { Task } from './types/Task';
+import type { User } from './types/Auth';
 
 function App() {
+  const { isAuthenticated, isLoading, login } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -29,8 +33,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
+    if (isAuthenticated) {
+      fetchTasks();
+    }
+  }, [fetchTasks, isAuthenticated]);
 
   const showSuccessMessage = (message: string) => {
     setSuccessMessage(message);
@@ -62,8 +68,29 @@ function App() {
     }
   };
 
+  const handleLoginSuccess = (user: User) => {
+    // The login function is called from the AuthContext
+    // The token is already stored in localStorage by the Login component
+    login(user, localStorage.getItem('authToken') || '');
+  };
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Show task page if authenticated
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-primary via-purple-500 to-secondary">
+    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-primary via-purple-500 to-secondary">
       {/* Animated Background Blobs */}
       <div className="absolute top-0 right-0 rounded-full w-96 h-96 bg-purple-300/30 blur-3xl animate-float" />
       <div className="absolute bottom-0 left-0 rounded-full w-96 h-96 bg-blue-300/30 blur-3xl animate-float" 
