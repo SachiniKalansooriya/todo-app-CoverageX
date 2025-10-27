@@ -6,7 +6,7 @@ import requireAuth, { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
-// Protect all task routes - require a valid app JWT
+// Protect all task routes 
 router.use(requireAuth as any);
 
 // Get all tasks for the authenticated user
@@ -27,7 +27,7 @@ router.get('/', async (req: AuthRequest, res) => {
       title: task.title,
       description: task.description,
       completed: task.completed,
-      scheduledAt: task.scheduledAt, // Return as string to preserve exact time
+      scheduledAt: task.scheduledAt, 
       created_at: task.createdAt.toISOString(),
       updated_at: task.updatedAt.toISOString()
     })));
@@ -61,7 +61,7 @@ router.post('/', async (req: AuthRequest, res) => {
 
     // Parse scheduledAt if provided
     if (scheduledAt) {
-      newTask.scheduledAt = scheduledAt; // Store as string to preserve exact time
+      newTask.scheduledAt = scheduledAt; 
     }
 
   const savedTask = await taskRepository.save(newTask);

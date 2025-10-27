@@ -7,7 +7,7 @@ import { User } from '../entities/User';
 const router = Router();
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me';
+const JWT_SECRET = process.env.JWT_SECRET || '';
 
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
@@ -76,7 +76,7 @@ router.post('/google', async (req, res) => {
       // Create application JWT signed with DB user id (so we can use it as owner id)
       const appToken = jwt.sign({ sub: dbUser.id, email: dbUser.email, name: dbUser.name }, JWT_SECRET, { expiresIn: '7d' });
 
-      // Set token as HttpOnly cookie for safer storage in browsers. We also return the token
+      // Set token as HttpOnly cookie for safer storage in browsers. 
       // in the response body for compatibility with clients that store token in JS (localStorage).
       const cookieOptions: any = {
         httpOnly: true,
