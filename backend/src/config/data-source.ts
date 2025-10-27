@@ -5,10 +5,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const DB_HOST = process.env.POSTGRES_HOST;
+const DB_HOST = process.env.POSTGRES_HOST ;
 const DB_PORT = parseInt(process.env.POSTGRES_PORT || '5432', 10);
-const DB_USER = process.env.POSTGRES_USER ;
-const DB_PASS = process.env.POSTGRES_PASSWORD ;
+const DB_USER = process.env.POSTGRES_USER;
+const DB_PASS = process.env.POSTGRES_PASSWORD;
 const DB_NAME = process.env.POSTGRES_DB;
 
 const entitiesPath = path.join(__dirname, '..', 'entities', '*.{ts,js}');
@@ -21,8 +21,7 @@ export const AppDataSource = new DataSource({
   username: DB_USER,
   password: DB_PASS,
   database: DB_NAME,
-  synchronize: true, // auto-create tables in development; use migrations for production
-  logging: false,
+  synchronize: true, 
   entities: [entitiesPath],
   migrations: [migrationsPath],
 });

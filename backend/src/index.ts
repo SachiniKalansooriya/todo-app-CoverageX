@@ -11,7 +11,6 @@ async function start() {
     console.log('Data source initialized');
   } catch (err) {
     console.error('Failed to initialize data source:', err);
-    // still continue — if DB not available the routes may fail. 
   }
 
   const app = express();

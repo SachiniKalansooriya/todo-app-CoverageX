@@ -29,6 +29,8 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
+      GOOGLE_CLIENT_ID: "669352070237-vv620qq4156hq0lq1get97qru0k7am87.apps.googleusercontent.com"
+      JWT_SECRET: "dev_jwt_secret_change_me"
       POSTGRES_DB: todo
       PORT: 4000
     ports:
