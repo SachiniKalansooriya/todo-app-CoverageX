@@ -1,12 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Custom Scrollbar */
 @layer utilities {
-  /* Use explicit properties instead of @apply so Tailwind utility lookup issues are avoided */
   ::-webkit-scrollbar {
-    width: 0.5rem; /* equivalent to w-2 */
+    width: 0.5rem; 
   }
 
   ::-webkit-scrollbar-track {

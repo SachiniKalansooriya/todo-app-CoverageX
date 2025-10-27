@@ -28,8 +28,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
         }`}
         data-testid="task-form"
       >
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-          <span className="text-3xl">➕</span>
+        <h2 className="flex items-center gap-3 mb-6 text-2xl font-bold text-white">
+          <span className="text-3xl"></span>
           Create New Task
         </h2>
 
@@ -38,7 +38,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
           <div className="relative">
             <label 
               htmlFor="title" 
-              className="block text-white/90 font-semibold mb-2 text-sm uppercase tracking-wide"
+              className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90"
             >
               Task Title *
             </label>
@@ -53,11 +53,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
               required
               disabled={isLoading}
               data-testid="title-input"
-              className="w-full px-5 py-4 bg-white/20 border-2 border-white/30 rounded-2xl 
-                       text-white placeholder-white/50 focus:outline-none focus:border-white/60 
-                       focus:bg-white/25 transition-all duration-300 text-lg
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       backdrop-blur-sm shadow-lg"
+              className="w-full px-5 py-4 text-lg text-white transition-all duration-300 border-2 shadow-lg bg-white/20 border-white/30 rounded-2xl placeholder-white/50 focus:outline-none focus:border-white/60 focus:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
             />
           </div>
 
@@ -65,7 +61,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
           <div className="relative">
             <label 
               htmlFor="description" 
-              className="block text-white/90 font-semibold mb-2 text-sm uppercase tracking-wide"
+              className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90"
             >
               Description (Optional)
             </label>
@@ -79,11 +75,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
               rows={4}
               disabled={isLoading}
               data-testid="description-input"
-              className="w-full px-5 py-4 bg-white/20 border-2 border-white/30 rounded-2xl 
-                       text-white placeholder-white/50 focus:outline-none focus:border-white/60 
-                       focus:bg-white/25 transition-all duration-300 resize-none text-lg
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       backdrop-blur-sm shadow-lg"
+              className="w-full px-5 py-4 text-lg text-white transition-all duration-300 border-2 shadow-lg resize-none bg-white/20 border-white/30 rounded-2xl placeholder-white/50 focus:outline-none focus:border-white/60 focus:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
             />
           </div>
 
@@ -102,7 +94,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
             {isLoading ? (
               <>
                 <svg 
-                  className="animate-spin h-6 w-6" 
+                  className="w-6 h-6 animate-spin" 
                   xmlns="http://www.w3.org/2000/svg" 
                   fill="none" 
                   viewBox="0 0 24 24"
@@ -125,7 +117,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
               </>
             ) : (
               <>
-                <span className="text-2xl">✨</span>
+                <span className="text-2xl"></span>
                 Add Task
               </>
             )}

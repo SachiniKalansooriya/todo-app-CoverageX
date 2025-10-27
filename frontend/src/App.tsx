@@ -42,7 +42,7 @@ function App() {
       setIsCreating(true);
       await taskService.createTask({ title, description });
       await fetchTasks();
-      showSuccessMessage('✨ Task created successfully!');
+      showSuccessMessage('Task created successfully!');
     } catch (err) {
       setError('Failed to create task. Please try again.');
       console.error('Error creating task:', err);
@@ -55,7 +55,7 @@ function App() {
     try {
       await taskService.completeTask(taskId);
       await fetchTasks();
-      showSuccessMessage('🎉 Task completed! Great job!');
+      showSuccessMessage('Task completed! Great job!');
     } catch (err) {
       setError('Failed to complete task. Please try again.');
       console.error('Error completing task:', err);
@@ -63,23 +63,23 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-purple-500 to-secondary overflow-hidden relative">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-primary via-purple-500 to-secondary">
       {/* Animated Background Blobs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-purple-300/30 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-300/30 rounded-full blur-3xl animate-float" 
+      <div className="absolute top-0 right-0 rounded-full w-96 h-96 bg-purple-300/30 blur-3xl animate-float" />
+      <div className="absolute bottom-0 left-0 rounded-full w-96 h-96 bg-blue-300/30 blur-3xl animate-float" 
            style={{ animationDelay: '5s' }} />
-      <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl animate-float" 
+      <div className="absolute rounded-full top-1/2 left-1/2 w-96 h-96 bg-pink-300/20 blur-3xl animate-float" 
            style={{ animationDelay: '10s' }} />
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
+      <div className="container relative z-10 max-w-5xl px-4 py-8 mx-auto">
         <Header taskCount={tasks.length} />
 
         {/* Success Message */}
         {successMessage && (
-          <div className="glass-strong rounded-2xl p-4 mb-6 shadow-xl animate-slide-down">
-            <div className="flex items-center justify-center gap-3 text-white font-semibold text-lg">
-              <span className="text-2xl">✅</span>
+          <div className="p-4 mb-6 shadow-xl glass-strong rounded-2xl animate-slide-down">
+            <div className="flex items-center justify-center gap-3 text-lg font-semibold text-white">
+             
               {successMessage}
             </div>
           </div>
@@ -87,9 +87,9 @@ function App() {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-500/90 backdrop-blur-md border border-red-300/50 rounded-2xl p-4 mb-6 shadow-xl animate-slide-down">
-            <div className="flex items-center justify-center gap-3 text-white font-semibold text-lg">
-              <span className="text-2xl">⚠️</span>
+          <div className="p-4 mb-6 border shadow-xl bg-red-500/90 backdrop-blur-md border-red-300/50 rounded-2xl animate-slide-down">
+            <div className="flex items-center justify-center gap-3 text-lg font-semibold text-white">
+              
               {error}
             </div>
           </div>
@@ -102,8 +102,8 @@ function App() {
 
         {/* Tasks Section */}
         <div className="animate-slide-up">
-          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3 drop-shadow-lg">
-            <span className="text-4xl">📋</span>
+          <h2 className="flex items-center gap-3 mb-6 text-3xl font-bold text-white drop-shadow-lg">
+           
             Recent Tasks
             <span className="text-xl font-normal text-white/80">(Latest 5)</span>
           </h2>
@@ -129,10 +129,8 @@ function App() {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <div className="glass rounded-2xl p-6 inline-block shadow-xl">
-            <p className="text-white/80 text-sm">
-              Made with <span className="text-red-400 animate-pulse">❤️</span> for productivity
-            </p>
+          <div className="inline-block p-6 shadow-xl glass rounded-2xl">
+            
           </div>
         </div>
       </div>

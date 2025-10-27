@@ -36,15 +36,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
         {/* Task Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-3 mb-3">
-            <span className="text-2xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-              📌
+            <span className="flex-shrink-0 text-2xl transition-transform duration-300 group-hover:scale-110">
+              
             </span>
             <div className="flex-1">
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-2 break-words">
+              <h3 className="mb-2 text-xl font-bold text-white break-words md:text-2xl">
                 {task.title}
               </h3>
               {task.description && (
-                <p className="text-white/80 text-base leading-relaxed break-words">
+                <p className="text-base leading-relaxed break-words text-white/80">
                   {task.description}
                 </p>
               )}
@@ -52,8 +52,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
           </div>
 
           {/* Task Meta */}
-          <div className="flex items-center gap-2 text-white/60 text-sm mt-4">
-            <span className="text-lg">🕐</span>
+          <div className="flex items-center gap-2 mt-4 text-sm text-white/60">
+            <span className="text-lg"></span>
             <span>{formatDate(task.created_at)}</span>
           </div>
         </div>
@@ -63,16 +63,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
           onClick={handleComplete}
           disabled={isCompleting}
           data-testid="done-button"
-          className="flex-shrink-0 bg-gradient-to-r from-green-400 to-emerald-500 
-                   hover:from-green-500 hover:to-emerald-600 text-white font-bold 
-                   py-3 px-6 rounded-xl transition-all duration-300 transform 
-                   hover:scale-110 active:scale-95 disabled:opacity-50 
-                   disabled:cursor-not-allowed shadow-lg hover:shadow-xl
-                   flex items-center gap-2 group"
+          className="flex items-center flex-shrink-0 gap-2 px-6 py-3 font-bold text-white transition-all duration-300 transform shadow-lg bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 rounded-xl hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl group"
         >
           {isCompleting ? (
             <svg 
-              className="animate-spin h-5 w-5" 
+              className="w-5 h-5 animate-spin" 
               xmlns="http://www.w3.org/2000/svg" 
               fill="none" 
               viewBox="0 0 24 24"
@@ -93,7 +88,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
             </svg>
           ) : (
             <>
-              <span className="text-xl group-hover:rotate-12 transition-transform duration-300">
+              <span className="text-xl transition-transform duration-300 group-hover:rotate-12">
                 ✓
               </span>
               <span className="hidden md:inline">Done</span>
