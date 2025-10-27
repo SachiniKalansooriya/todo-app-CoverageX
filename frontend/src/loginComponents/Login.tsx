@@ -82,10 +82,14 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     if (initializedRef.current) return; 
     if (!googleButtonRef.current) return;
 
-    try {
-  // read client id from a test-friendly helper that prefers a global shim
-  // (set in tests by setting (global as any).importMetaEnv)
-  const clientId = (global as any).importMetaEnv?.VITE_GOOGLE_CLIENT_ID || (process.env.VITE_GOOGLE_CLIENT_ID as string) || '';
+      try {
+        // Resolve client id in a browser- and test-friendly way.
+        // Prefer import.meta.env in the browser, then globalThis.importMetaEnv (test shim), then process.env.
+        const clientId = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID)
+          ? (import.meta as any).env.VITE_GOOGLE_CLIENT_ID
+          : (typeof globalThis !== 'undefined' && (globalThis as any).importMetaEnv?.VITE_GOOGLE_CLIENT_ID)
+            ? (globalThis as any).importMetaEnv.VITE_GOOGLE_CLIENT_ID
+            : (process.env.VITE_GOOGLE_CLIENT_ID as string) || '';
       // Debug info to help diagnose origin
       console.debug('[GSI] init attempt', { clientId, origin: window.location.origin });
       if (!clientId) {
@@ -110,11 +114,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         setInitError('Failed to render Google sign-in button. This may be an origin/client-id configuration issue.');
       }
 
-     
-      // NOTE: Do not call `prompt()` automatically. Some browsers will auto-sign-in
-      // the user via One-Tap/FedCM which can cause the app to navigate immediately
-      // to the dashboard without an explicit user click. We intentionally render
-      // only the Google Sign-In button to ensure users explicitly initiate login.
 
       initializedRef.current = true;
     } catch (err) {

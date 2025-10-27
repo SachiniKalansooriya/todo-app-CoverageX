@@ -10,7 +10,7 @@ import type { Task } from './types/Task';
 import type { User } from './types/Auth';
 
 function App() {
-  const { isAuthenticated, isLoading, login } = useAuth();
+  const { isAuthenticated, isLoading, login, logout } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -134,6 +134,33 @@ function App() {
           alt="Tasks Logo" 
           className="object-contain w-16 h-16 rounded-lg shadow-lg md:w-20 md:h-20"
         />
+      </div>
+      {/* Logout button fixed top-right of the page */}
+      <div className="absolute z-30 top-4 right-4">
+        <button
+          onClick={async () => {
+            const ok = window.confirm('Are you sure you want to log out?');
+            if (!ok) return;
+            try {
+              await import('./services/api').then(m => m.authService.logout());
+            } catch (e) {
+              console.debug('Logout request failed:', e);
+            }
+            try {
+              logout();
+              localStorage.removeItem('authToken');
+            } catch (e) {
+              // ignore
+            }
+            try {
+              window.history.replaceState({}, '', '/');
+            } catch (e) {}
+            window.location.reload();
+          }}
+          className="px-3 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg shadow hover:bg-red-600"
+        >
+          Logout
+        </button>
       </div>
 
       {/* Animated Background Blobs */}

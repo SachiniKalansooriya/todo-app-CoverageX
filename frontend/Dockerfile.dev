@@ -1,7 +1,9 @@
 FROM node:20-alpine
 WORKDIR /usr/src/app
 COPY package*.json ./
-RUN npm ci
+# Install dependencies allowing legacy peer deps to avoid peer conflicts during image build
+# This avoids ERESOLVE failures for testing libraries that expect React 18 while the app uses React 19.
+RUN npm ci --legacy-peer-deps
 COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host"]
