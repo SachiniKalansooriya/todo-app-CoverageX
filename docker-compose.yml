@@ -55,7 +55,7 @@ services:
       - /usr/src/app/node_modules
     command: npm run dev
     environment:
-      - VITE_API_URL=http://backend:4000/api
+      - VITE_API_URL=http://localhost:4000/api
 
   pgadmin:
     image: dpage/pgadmin4:7.5

@@ -109,12 +109,10 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       }
 
      
-      try {
-        window.google.accounts.id.prompt(); 
-      } catch (e) {
-        console.warn('Google prompt() failed or was blocked (FedCM/navigation credentials issue):', e);
-        setInitError('One-tap sign-in blocked by browser/site settings (FedCM). Try Incognito or check site permissions.');
-      }
+      // NOTE: Do not call `prompt()` automatically. Some browsers will auto-sign-in
+      // the user via One-Tap/FedCM which can cause the app to navigate immediately
+      // to the dashboard without an explicit user click. We intentionally render
+      // only the Google Sign-In button to ensure users explicitly initiate login.
 
       initializedRef.current = true;
     } catch (err) {

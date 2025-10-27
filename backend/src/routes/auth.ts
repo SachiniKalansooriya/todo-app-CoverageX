@@ -47,9 +47,6 @@ router.post('/google', async (req, res) => {
       picture: payload.picture || undefined,
     };
 
-    // Create application JWT (signed with server secret)
-    const appToken = jwt.sign({ sub: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
-
     // Persist or upsert user in DB
     try {
       if (!AppDataSource.isInitialized) {
@@ -76,6 +73,8 @@ router.post('/google', async (req, res) => {
         } as Partial<User>);
         await userRepo.save(dbUser);
       }
+      // Create application JWT signed with DB user id (so we can use it as owner id)
+      const appToken = jwt.sign({ sub: dbUser.id, email: dbUser.email, name: dbUser.name }, JWT_SECRET, { expiresIn: '7d' });
 
       // Return normalized user object (use DB id)
       const returnedUser = {
@@ -88,7 +87,9 @@ router.post('/google', async (req, res) => {
     } catch (dbErr) {
       console.error('DB upsert error:', dbErr);
       // Even if DB upsert fails, return token so frontend can still use app token.
-      res.json({ user, token: appToken });
+      // In this fallback case we only have the google sub as id
+      const fallbackToken = jwt.sign({ sub: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+      res.json({ user, token: fallbackToken });
     }
   } catch (err) {
     console.error('Google auth error:', err);

@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { authService } from '../services/api';
 import type { User, AuthContextType } from '../types/Auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,23 +15,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing auth token on app load
-    const checkAuthStatus = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const userData = await authService.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          // Token is invalid, remove it
-          localStorage.removeItem('authToken');
-          console.error('Invalid token, user needs to login again:', error);
-        }
-      }
-      setIsLoading(false);
-    };
-
-    checkAuthStatus();
+    // Do not auto-authenticate from a stored token on initial load.
+    // This ensures the first screen a fresh browser session sees is the login page
+    // and avoids accidental auto-sign-in UX (One-Tap, stale tokens, etc.).
+    // The app still supports programmatic login via `login(user, token)`.
+    setIsLoading(false);
   }, []);
 
   const login = (userData: User, token: string) => {

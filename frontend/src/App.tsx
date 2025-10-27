@@ -21,7 +21,9 @@ function App() {
     try {
       setLoading(true);
       const data = await taskService.getTasks();
-      setTasks(data);
+      // Ensure we only keep the most recent 5 tasks on the client
+      // (backend should already return latest 5, but this is a safety guard)
+      setTasks(data.slice(0, 5));
       setError(null);
     } catch (err) {
       setError('Failed to fetch tasks. Please try again.');
@@ -36,6 +38,27 @@ function App() {
       fetchTasks();
     }
   }, [fetchTasks, isAuthenticated]);
+
+  // Keep the URL in sync with auth state so navigation is structured.
+  useEffect(() => {
+    if (isLoading) return;
+
+    try {
+      if (!isAuthenticated) {
+        // If user is not authenticated, ensure URL is root (login page)
+        if (window.location.pathname !== '/') {
+          window.history.replaceState({}, '', '/');
+        }
+      } else {
+        // Authenticated users should see the dashboard at '/dashboard'
+        if (window.location.pathname !== '/dashboard') {
+          window.history.replaceState({}, '', '/dashboard');
+        }
+      }
+    } catch (e) {
+      console.debug('History update skipped:', e);
+    }
+  }, [isAuthenticated, isLoading]);
 
   const showSuccessMessage = (message: string) => {
     setSuccessMessage(message);
@@ -63,7 +86,13 @@ function App() {
       showSuccessMessage('Task completed! Great job!');
     } catch (err) {
       setError('Failed to complete task. Please try again.');
-      console.error('Error completing task:', err);
+      // Better error output for Axios errors
+      // eslint-disable-next-line no-console
+      if ((err as any)?.response) {
+        console.error('Error completing task:', (err as any).response.status, (err as any).response.data);
+      } else {
+        console.error('Error completing task:', err);
+      }
     }
   };
 
@@ -71,6 +100,14 @@ function App() {
     // The login function is called from the AuthContext
     // The token is already stored in localStorage by the Login component
     login(user, localStorage.getItem('authToken') || '');
+    // Navigate to dashboard in a structured way (push state rather than full page reload)
+    try {
+      window.history.pushState({}, '', '/dashboard');
+    } catch (e) {
+      // ignore if not available
+    }
+    // Fetch tasks immediately after login
+    void fetchTasks();
   };
 
   // Show loading spinner while checking authentication
@@ -95,7 +132,7 @@ function App() {
         <img 
           src="/Tasks.png" 
           alt="Tasks Logo" 
-          className="object-contain rounded-lg shadow-lg h-16 w-16 md:w-20 md:h-20"
+          className="object-contain w-16 h-16 rounded-lg shadow-lg md:w-20 md:h-20"
         />
       </div>
 
@@ -107,7 +144,7 @@ function App() {
            style={{ animationDelay: '10s' }} />
 
       {/* Main Content - positioned below logo */}
-      <div className="container relative z-10 px-4 py-8 mx-auto max-w-7xl mt-24">
+      <div className="container relative z-10 px-4 py-8 mx-auto mt-24 max-w-7xl">
         {/* Success Message */}
         {successMessage && (
           <div className="mb-6 shadow-xl glass-strong rounded-2xl animate-slide-down">

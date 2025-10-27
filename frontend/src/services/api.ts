@@ -19,6 +19,28 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Global response interceptor: if backend returns 401, clear token and navigate to login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401) {
+      try {
+        localStorage.removeItem('authToken');
+        // Push to login route so the app shows the login page
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, '', '/login');
+          // trigger a reload to ensure app state resets
+          window.location.reload();
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const authService = {
   googleSignIn: async (token: string) => {
     const response = await api.post('/auth/google', { token });
@@ -48,7 +70,19 @@ export const taskService = {
   },
 
   completeTask: async (taskId: number): Promise<void> => {
-    await api.put<void>(`/tasks/${taskId}/complete`);
+    // Prefer DELETE /tasks/:id. If backend still uses the older
+    // PUT /tasks/:id/complete route, fall back to that for compatibility.
+    try {
+      await api.delete<void>(`/tasks/${taskId}`);
+    } catch (err: any) {
+      // If delete isn't supported (404), try marking complete as fallback
+      if (err?.response?.status === 404) {
+        await api.put<void>(`/tasks/${taskId}/complete`);
+      } else {
+        // rethrow for caller to handle
+        throw err;
+      }
+    }
   },
 };
 

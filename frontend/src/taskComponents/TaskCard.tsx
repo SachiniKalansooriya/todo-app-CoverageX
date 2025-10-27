@@ -64,7 +64,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
                 {task.title}
               </h3>
               {task.description && (
-                <p className="text-base leading-relaxed break-words text-gray-600">
+                <p className="text-base leading-relaxed text-gray-600 break-words">
                   {task.description}
                 </p>
               )}

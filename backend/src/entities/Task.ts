@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
 import { User } from './User';
 
 @Entity({ name: 'tasks' })
@@ -18,8 +18,12 @@ export class Task {
   @Column({ type: 'varchar', length: 25, nullable: true })
   scheduledAt?: string;
 
-  @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE', nullable: true })
-  user?: User | null;
+  @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE', nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
+
+  @Column({ type: 'uuid', name: 'user_id' })
+  userId!: string;
 
   @CreateDateColumn()
   createdAt!: Date;
