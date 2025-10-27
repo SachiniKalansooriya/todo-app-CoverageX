@@ -15,8 +15,28 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    if (!dateString) return '';
+    // If the stored value is a local datetime string (YYYY-MM-DDTHH:mm[:ss])
+    // parse components and create a Date in local timezone to avoid implicit
+    // timezone conversion which can shift the displayed time.
+    const localDateTimeRegex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/;
+    const m = dateString.match(localDateTimeRegex);
+    let date: Date;
+    if (m) {
+      const year = parseInt(m[1], 10);
+      const month = parseInt(m[2], 10);
+      const day = parseInt(m[3], 10);
+      const hour = parseInt(m[4], 10);
+      const minute = parseInt(m[5], 10);
+      const second = m[6] ? parseInt(m[6], 10) : 0;
+      // construct using local timezone
+      date = new Date(year, month - 1, day, hour, minute, second);
+    } else {
+      // fallback: let Date parse (handles ISO with timezone)
+      date = new Date(dateString);
+    }
+
+    return date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -52,9 +72,17 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
           </div>
 
           {/* Task Meta */}
-          <div className="flex items-center gap-2 mt-4 text-sm text-gray-500">
-            <span className="text-lg"></span>
-            <span>{formatDate(task.created_at)}</span>
+          <div className="flex flex-col gap-2 mt-4 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <span className="text-lg"></span>
+              <span>Created: {formatDate(task.created_at)}</span>
+            </div>
+            {task.scheduledAt && (
+              <div className="flex items-center gap-2">
+                <span className="text-lg">⏰</span>
+                <span>Scheduled: {formatDate(task.scheduledAt)}</span>
+              </div>
+            )}
           </div>
         </div>
 

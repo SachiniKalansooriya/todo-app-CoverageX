@@ -3,6 +3,7 @@ export interface Task {
   title: string;
   description: string | null;
   completed: boolean;
+  scheduledAt: string | null;
   created_at: string;
   updated_at: string | null;
 }

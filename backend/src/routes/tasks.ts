@@ -1,63 +1,101 @@
 import { Router } from 'express';
+import { AppDataSource } from '../config/data-source';
+import { Task } from '../entities/Task';
+import { User } from '../entities/User';
 
 const router = Router();
 
-// Mock tasks data
-let tasks = [
-  {
-    id: 1,
-    title: 'Sample Task 1',
-    description: 'This is a sample task',
-    completed: false,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 2,
-    title: 'Sample Task 2',
-    description: 'Another sample task',
-    completed: true,
-    createdAt: new Date().toISOString()
-  }
-];
+// Get all tasks for the authenticated user
+router.get('/', async (req, res) => {
+  try {
+    const taskRepository = AppDataSource.getRepository(Task);
+    // Return only the latest 5 tasks as per frontend logic
+    const tasks = await taskRepository.find({
+      order: { createdAt: 'DESC' },
+      take: 5,
+      relations: ['user']
+    });
 
-// Get all tasks
-router.get('/', (req, res) => {
-  // Return only the latest 5 tasks as per frontend logic
-  const recentTasks = tasks.slice(-5);
-  res.json(recentTasks);
+    res.json(tasks.map(task => ({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      completed: task.completed,
+      scheduledAt: task.scheduledAt, // Return as string to preserve exact time
+      created_at: task.createdAt.toISOString(),
+      updated_at: task.updatedAt.toISOString()
+    })));
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).json({ error: 'Failed to fetch tasks' });
+  }
 });
 
 // Create a new task
-router.post('/', (req, res) => {
-  const { title, description } = req.body;
+router.post('/', async (req, res) => {
+  try {
+    const { title, description, scheduledAt } = req.body;
 
-  if (!title || !description) {
-    return res.status(400).json({ error: 'Title and description are required' });
+    if (!title) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
+
+    const taskRepository = AppDataSource.getRepository(Task);
+
+    const newTask = new Task();
+    newTask.title = title;
+    newTask.description = description || '';
+    newTask.completed = false;
+
+    // Parse scheduledAt if provided
+    if (scheduledAt) {
+      newTask.scheduledAt = scheduledAt; // Store as string to preserve exact time
+    }
+
+    const savedTask = await taskRepository.save(newTask);
+
+    res.status(201).json({
+      id: savedTask.id,
+      title: savedTask.title,
+      description: savedTask.description,
+      completed: savedTask.completed,
+      scheduledAt: savedTask.scheduledAt, 
+      created_at: savedTask.createdAt.toISOString(),
+      updated_at: savedTask.updatedAt.toISOString()
+    });
+  } catch (error) {
+    console.error('Error creating task:', error);
+    res.status(500).json({ error: 'Failed to create task' });
   }
-
-  const newTask = {
-    id: Date.now(), // Simple ID generation
-    title,
-    description,
-    completed: false,
-    createdAt: new Date().toISOString()
-  };
-
-  tasks.push(newTask);
-  res.status(201).json(newTask);
 });
 
 // Mark task as complete
-router.put('/:id/complete', (req, res) => {
-  const taskId = parseInt(req.params.id);
-  const task = tasks.find(t => t.id === taskId);
+router.put('/:id/complete', async (req, res) => {
+  try {
+    const taskId = parseInt(req.params.id);
+    const taskRepository = AppDataSource.getRepository(Task);
 
-  if (!task) {
-    return res.status(404).json({ error: 'Task not found' });
+    const task = await taskRepository.findOne({ where: { id: taskId } });
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    task.completed = true;
+    await taskRepository.save(task);
+
+    res.json({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      completed: task.completed,
+      scheduledAt: task.scheduledAt, 
+      created_at: task.createdAt.toISOString(),
+      updated_at: task.updatedAt.toISOString()
+    });
+  } catch (error) {
+    console.error('Error completing task:', error);
+    res.status(500).json({ error: 'Failed to complete task' });
   }
-
-  task.completed = true;
-  res.json(task);
 });
 
 export default router;

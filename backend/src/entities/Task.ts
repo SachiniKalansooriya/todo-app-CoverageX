@@ -15,6 +15,9 @@ export class Task {
   @Column({ type: 'boolean', default: false })
   completed!: boolean;
 
+  @Column({ type: 'varchar', length: 25, nullable: true })
+  scheduledAt?: string;
+
   @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE', nullable: true })
   user?: User | null;
 

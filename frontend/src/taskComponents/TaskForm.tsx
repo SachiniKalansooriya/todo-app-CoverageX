@@ -23,16 +23,26 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      // build scheduled ISO string in local time
+      // build scheduled ISO string preserving local time
       let scheduledAt: string | undefined = undefined;
       if (date) {
         // create a Date object from selected date + time
         const [y, m, d] = date.split('-').map((s) => parseInt(s, 10));
         const hh = parseInt(hour, 10);
         const mm = parseInt(minute, 10);
-        // Use local timezone and produce ISO string
-        const dt = new Date(y, m - 1, d, hh % 24, mm % 60, 0, 0);
-        scheduledAt = dt.toISOString();
+        
+        // Create date in local timezone and format as ISO string manually
+        // This preserves the local time instead of converting to UTC
+        const dt = new Date(y, m - 1, d, hh, mm, 0, 0);
+        const year = dt.getFullYear();
+        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const day = String(dt.getDate()).padStart(2, '0');
+        const hours = String(dt.getHours()).padStart(2, '0');
+        const minutes = String(dt.getMinutes()).padStart(2, '0');
+        const seconds = String(dt.getSeconds()).padStart(2, '0');
+        
+        // Create ISO string with local time (not UTC)
+        scheduledAt = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
       }
 
       onSubmit(title.trim(), description.trim(), scheduledAt);
