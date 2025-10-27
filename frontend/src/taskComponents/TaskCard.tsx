@@ -40,11 +40,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
               
             </span>
             <div className="flex-1">
-              <h3 className="mb-2 text-xl font-bold text-white break-words md:text-2xl">
+              <h3 className="mb-2 text-xl font-bold text-black break-words md:text-2xl">
                 {task.title}
               </h3>
               {task.description && (
-                <p className="text-base leading-relaxed break-words text-white/80">
+                <p className="text-base leading-relaxed break-words text-gray-600">
                   {task.description}
                 </p>
               )}
@@ -52,7 +52,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
           </div>
 
           {/* Task Meta */}
-          <div className="flex items-center gap-2 mt-4 text-sm text-white/60">
+          <div className="flex items-center gap-2 mt-4 text-sm text-gray-500">
             <span className="text-lg"></span>
             <span>{formatDate(task.created_at)}</span>
           </div>

@@ -57,17 +57,14 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
         }`}
         data-testid="task-form"
       >
-        <h2 className="flex items-center gap-3 mb-6 text-2xl font-bold text-white">
-          <span className="text-3xl"></span>
-          Create New Task
-        </h2>
+       
 
         <div className="space-y-5">
           {/* Title Input */}
           <div className="relative">
             <label 
               htmlFor="title" 
-              className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90"
+              className="block mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase"
             >
               Task Title *
             </label>
@@ -82,31 +79,30 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
               required
               disabled={isLoading}
               data-testid="title-input"
-              className="w-full px-5 py-4 text-lg text-white transition-all duration-300 border-2 shadow-lg bg-white/20 border-white/30 rounded-2xl placeholder-white/50 focus:outline-none focus:border-white/60 focus:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+              className="w-full px-5 py-4 text-lg text-black placeholder-gray-500 transition-all duration-300 border-2 border-gray-300 shadow-lg bg-white/20 rounded-2xl focus:outline-none focus:border-gray-500 focus:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
             />
           </div>
 
           {/* Date & Time selectors */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <label className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90">Date</label>
+              <label className="block mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase">Date</label>
               <input
                 type="date"
                 value={date}
                 min="2025-01-01"
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-3 text-white border rounded-lg bg-white/20 border-white/30"
+                className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg bg-white/20"
                 disabled={isLoading}
               />
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90">Hour</label>
+              <label className="block mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase">Hour</label>
               <select
                 value={hour}
                 onChange={(e) => setHour(e.target.value)}
-                size={4}
-                className="w-full px-4 py-3 overflow-y-auto text-white border rounded-lg bg-white/20 border-white/30"
+                className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg bg-white/20"
                 disabled={isLoading}
               >
                 {Array.from({ length: 24 }).map((_, i) => {
@@ -121,12 +117,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
             </div>
 
             <div>
-              <label className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90">Minutes</label>
+              <label className="block mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase">Minutes</label>
               <select
                 value={minute}
                 onChange={(e) => setMinute(e.target.value)}
-                size={4}
-                className="w-full px-4 py-3 overflow-y-auto text-white border rounded-lg bg-white/20 border-white/30"
+                className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg bg-white/20"
                 disabled={isLoading}
               >
                 {Array.from({ length: 60 }).map((_, i) => {
@@ -145,7 +140,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
           <div className="relative">
             <label 
               htmlFor="description" 
-              className="block mb-2 text-sm font-semibold tracking-wide uppercase text-white/90"
+              className="block mb-2 text-sm font-semibold tracking-wide text-gray-700 uppercase"
             >
               Description (Optional)
             </label>
@@ -159,7 +154,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, isLoading = false }) => {
               rows={4}
               disabled={isLoading}
               data-testid="description-input"
-              className="w-full px-5 py-4 text-lg text-white transition-all duration-300 border-2 shadow-lg resize-none bg-white/20 border-white/30 rounded-2xl placeholder-white/50 focus:outline-none focus:border-white/60 focus:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+              className="w-full px-5 py-4 text-lg text-black placeholder-gray-500 transition-all duration-300 border-2 border-gray-300 shadow-lg resize-none bg-white/20 rounded-2xl focus:outline-none focus:border-gray-500 focus:bg-white/25 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
             />
           </div>
 

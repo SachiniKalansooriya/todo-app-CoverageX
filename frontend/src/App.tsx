@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import Header from './taskComponents/Header';
 import TaskForm from './taskComponents/TaskForm';
 import TaskCard from './taskComponents/TaskCard';
 import LoadingSpinner from './taskComponents/LoadingSpinner';
@@ -90,7 +89,16 @@ function App() {
 
   // Show task page if authenticated
   return (
-    <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-primary via-purple-500 to-secondary">
+    <div className="relative min-h-screen overflow-hidden" style={{ backgroundImage: 'url(/cover.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      {/* Logo in left corner of page */}
+      <div className="absolute z-20 top-4 left-4">
+        <img 
+          src="/Tasks.png" 
+          alt="Tasks Logo" 
+          className="object-contain rounded-lg shadow-lg h-16 w-16 md:w-20 md:h-20"
+        />
+      </div>
+
       {/* Animated Background Blobs */}
       <div className="absolute top-0 right-0 rounded-full w-96 h-96 bg-purple-300/30 blur-3xl animate-float" />
       <div className="absolute bottom-0 left-0 rounded-full w-96 h-96 bg-blue-300/30 blur-3xl animate-float" 
@@ -98,14 +106,12 @@ function App() {
       <div className="absolute rounded-full top-1/2 left-1/2 w-96 h-96 bg-pink-300/20 blur-3xl animate-float" 
            style={{ animationDelay: '10s' }} />
 
-      {/* Main Content */}
-      <div className="container relative z-10 max-w-5xl px-4 py-8 mx-auto">
-        <Header taskCount={tasks.length} />
-
+      {/* Main Content - positioned below logo */}
+      <div className="container relative z-10 px-4 py-8 mx-auto max-w-7xl mt-24">
         {/* Success Message */}
         {successMessage && (
-          <div className="p-4 mb-6 shadow-xl glass-strong rounded-2xl animate-slide-down">
-            <div className="flex items-center justify-center gap-3 text-lg font-semibold text-white">
+          <div className="mb-6 shadow-xl glass-strong rounded-2xl animate-slide-down">
+            <div className="flex items-center justify-center gap-3 p-4 text-lg font-semibold text-black">
              
               {successMessage}
             </div>
@@ -114,44 +120,59 @@ function App() {
 
         {/* Error Message */}
         {error && (
-          <div className="p-4 mb-6 border shadow-xl bg-red-500/90 backdrop-blur-md border-red-300/50 rounded-2xl animate-slide-down">
-            <div className="flex items-center justify-center gap-3 text-lg font-semibold text-white">
+          <div className="mb-6 border shadow-xl bg-red-500/90 backdrop-blur-md border-red-300/50 rounded-2xl animate-slide-down">
+            <div className="flex items-center justify-center gap-3 p-4 text-lg font-semibold text-black">
               
               {error}
             </div>
           </div>
         )}
 
-        {/* Task Form */}
-        <div className="mb-8">
-          <TaskForm onSubmit={handleCreateTask} isLoading={isCreating} />
-        </div>
-
-        {/* Tasks Section */}
-        <div className="animate-slide-up">
-          <h2 className="flex items-center gap-3 mb-6 text-3xl font-bold text-white drop-shadow-lg">
-           
-            Recent Tasks
-            <span className="text-xl font-normal text-white/80">(Latest 5)</span>
-          </h2>
-
-          {loading ? (
-            <LoadingSpinner />
-          ) : tasks.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div className="space-y-4">
-              {tasks.map((task, index) => (
-                <div 
-                  key={task.id} 
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                  className="animate-slide-up"
-                >
-                  <TaskCard task={task} onComplete={handleCompleteTask} />
-                </div>
-              ))}
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[600px]">
+          {/* Left Column - Create Task */}
+          <div className="space-y-6">
+            <div className="p-6 shadow-2xl glass-strong rounded-3xl animate-fade-in">
+              <h2 className="flex items-center gap-3 mb-6 text-2xl font-bold text-black">
+                <span className="text-3xl"></span>
+                Create New Task
+              </h2>
+              <TaskForm onSubmit={handleCreateTask} isLoading={isCreating} />
             </div>
-          )}
+          </div>
+
+          {/* Right Column - Recent Tasks */}
+          <div className="space-y-6">
+            <div className="p-6 shadow-2xl glass-strong rounded-3xl animate-fade-in">
+              <h2 className="flex items-center gap-3 mb-6 text-2xl font-bold text-black">
+                <span className="text-3xl"></span>
+                Recent Tasks
+                <span className="text-lg font-normal text-gray-600">(Latest 5)</span>
+              </h2>
+
+              <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+                {loading ? (
+                  <div className="flex justify-center py-8">
+                    <LoadingSpinner />
+                  </div>
+                ) : tasks.length === 0 ? (
+                  <EmptyState />
+                ) : (
+                  <div className="space-y-4">
+                    {tasks.map((task, index) => (
+                      <div 
+                        key={task.id} 
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                        className="animate-slide-up"
+                      >
+                        <TaskCard task={task} onComplete={handleCompleteTask} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
